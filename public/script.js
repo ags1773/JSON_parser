@@ -10,11 +10,12 @@ document.getElementById("btn2").addEventListener("click", function(){
 });
 document.getElementById("btn1").addEventListener('click', function(){
   let tc = document.getElementById('in1').value;
+  console.log("-------------Start--------------------");
   console.log("Input JSON -->");
   console.log(tc);
-  console.log("-----------------------------------");
   console.log("Output ->");
   console.log(jsonParser(tc));
+  console.log("-------------End----------------------");
   for(let i=0; i<6; i++){
     document.getElementById(i).classList.remove("highlight");
   }
@@ -143,7 +144,7 @@ function removeWhiteSpaces(data){
 }
 
 function stringParser(str){
-  let reTest = /^"(|[^\"]*| *\\["\\/bfnrt] *| *(\\u[\dA-Fa-f]{4} )*)"/.exec(str);
+  let reTest = /^"([^\\"]|\\"|\\\\|\\\/|\\b|\\f|\\n|\\r|\\t|\\u[\dA-Fa-f]{4})*"/.exec(str);
   if(!reTest){
     return null;
   }
