@@ -1,5 +1,26 @@
 "use strict";
 
+let whatToHighlight = 3;
+document.getElementById("btn2").addEventListener("click", function(){
+  console.clear();
+  document.getElementById('in1').value = "";
+  for(let i=0; i<6; i++){
+    document.getElementById(i).classList.remove("highlight");
+  }
+});
+document.getElementById("btn1").addEventListener('click', function(){
+  let tc = document.getElementById('in1').value;
+  console.log("Input JSON -->");
+  console.log(tc);
+  console.log("-----------------------------------");
+  console.log("Output ->");
+  console.log(jsonParser(tc));
+  for(let i=0; i<6; i++){
+    document.getElementById(i).classList.remove("highlight");
+  }
+  document.getElementById(whatToHighlight).classList.add("highlight");
+});
+
 function jsonParser(str){
   return nullParser(str) || booleanParser(str) || stringParser(str) || numberParser(str) || arrayParser(str) || objectParser(str);
 }
@@ -48,6 +69,7 @@ function objectParser(str){
   } else return null;
 
   if(endOfObject){
+    whatToHighlight = 5;
     return [output,str];
   }
 }
@@ -91,6 +113,7 @@ function arrayParser(str){
   } else return null;
 
   if(endOfArray){
+    whatToHighlight = 4;
     return [output,str];
   }
 }
@@ -124,6 +147,7 @@ function stringParser(str){
   if(!reTest){
     return null;
   }
+  whatToHighlight = 2;
   return [reTest[0].slice(1,-1),str.slice(reTest[0].length)];
 }
 
@@ -140,14 +164,16 @@ function numberParser(str){
   if(!reTest){
     return null;
   }
+  whatToHighlight = 3;
   return [Number(reTest[0]),str.slice(reTest[0].length)];
 }
 
 function booleanParser(str){
-  let reTest = /(^true)|(^false)/.exec(str);
+  let reTest = /^true|^false/.exec(str);
   if(!reTest){
     return null;
   }
+  whatToHighlight = 1;
   return [(reTest[0]==="true")?(true):(false),str.slice(reTest[0].length)];
 }
 
@@ -156,5 +182,6 @@ function nullParser(str){
   if(!reTest){
     return null;
   }
+  whatToHighlight = 0;
   return [null,str.slice(reTest[0].length)];
 }

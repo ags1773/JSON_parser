@@ -6,31 +6,48 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>My JSON Parser</title>
   <style>
+    .boxsizingBorder {
+        -webkit-box-sizing: border-box;
+           -moz-box-sizing: border-box;
+                box-sizing: border-box;
+    }
     body{
       background-color: powderblue;
+    }
+    textarea, button{
+      border:1px solid #999999;
+      width:100%;
+      margin:5px 0;
+      padding:3px;
+    }
+    .highlight{
+      background-color: yellow;
+    }
+    li{
+      height: 1.5em;
     }
   </style>
 </head>
 <body>
   <h2>JSON Parser</h2>
+  <hr>
   <p>
     <a href="https://www.json.org/" target="_blank">json.org</a></br>
     <a href="http://json.org/example.html" target="_blank">Sample JSON data</a></br>
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/JSON/parse" target="_blank">MDN JSON.parse()</a>
   </p>
   <p>
-    Order:
     <ul>
-      <li>---NULL parser---</li>
-      <li>---Boolean parser---</li>
-      <li>---String parser---</li>
-      <li>---Number parser---</li>
-      <li>---Whitespace parser---</li>
-      <li>---Array parser---</li>
-      <li>---Object parser---</li>
+      <li id='0'>---  Null Parser  ---</li>
+      <li id='1'>---  Boolean Parser  ---</li>
+      <li id='2'>---  String Parser  ---</li>
+      <li id='3'>---  Number Parser  ---</li>
+      <li id='4'>---  Array Parser  ---</li>
+      <li id='5'>---  Object Parser  ---</li>
     </ul>
   </p>
-  <hr>
+  <textarea class="boxsizingBorder" rows="15" cols="100" id="in1"></textarea>
+  <button class="boxsizingBorder" id="btn1" style="height:3em;">Submit</button>
+  <button class="boxsizingBorder" id="btn2" style="height:3em;">Clear</button>
 
   <script src="script.js"></script>
 </body>
