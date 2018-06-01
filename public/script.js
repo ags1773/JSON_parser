@@ -4,46 +4,103 @@ function jsonParser(str){
   return nullParser(str) || booleanParser(str) || stringParser(str) || numberParser(str) || arrayParser(str) || objectParser(str);
 }
 
+function objectParser(str){
+  let output = {};
+  let endOfObject = false;
+  str = removeWhiteSpaces(str);
+
+  if(str.charAt(0) === '{'){
+    str = str.slice(1);
+
+    while(str.charAt(0) !== '}'){
+      str = removeWhiteSpaces(str);
+      let temp = stringParser(str);
+
+      if(!temp) return null;
+
+      let key = temp[0];
+      str = removeWhiteSpaces(temp[1]);
+      temp = colonParser(str);
+
+      if(!temp) return null;
+
+      str = removeWhiteSpaces(temp[1]);
+      temp = jsonParser(str);
+
+      if(!temp) return null;
+
+      output[key] = temp[0];
+      str = removeWhiteSpaces(temp[1]);
+
+      if(str.charAt(0) === '}'){
+        str = str.slice(1);
+        endOfObject = true;
+        break;
+      } else if(str.charAt(0) === ','){
+        temp = commaParser(str);
+        str = removeWhiteSpaces(temp[1]);
+        if(str.charAt(0) === '}'){
+          endOfObject = true;
+          break;
+        }
+      } else return null;
+    }
+  } else return null;
+
+  if(endOfObject){
+    return [output,str];
+  }
+}
+
 function arrayParser(str){
   let output = [];
   let endOfArray = false;
   str = removeWhiteSpaces(str);
   if(str.charAt(0) === '['){
     str = str.slice(1);
+
     while(str.charAt(0) !== ']'){
       str = removeWhiteSpaces(str);
       let temp = jsonParser(str);
+
       if(!temp) return null;
+
       output.push(temp[0]);
       str = removeWhiteSpaces(temp[1]);
+
       if(str.charAt(0) === ']'){
+        //will return [1,2,3] for arrayParser('[1,2,3,]kdgdf');
         str = str.slice(1);
         endOfArray = true;
         break;
-      } else if(str.charAt(0) === ','){
+      }
+
+      else if(str.charAt(0) === ','){
         temp = commaParser(str);
         str = removeWhiteSpaces(temp[1]);
+
         if(str.charAt(0) === ']'){
           endOfArray = true;
           break;
         }
-      } else {
-        console.log("some problem..");
-        return null;
       }
-      //console.log(`str => ${str}`);
-      //console.log(`output => ${output}`);
+
+      else return null;
+      //The above else will return null for case [1,2    "c"  "b",true]
     }
   } else return null;
+
   if(endOfArray){
     return [output,str];
   }
 }
 
-let testData1 = '[{"0":"101","member_id":"101","1":"3k.png","image_nm":"3k.png","2":"\/images\/phones\/","image_path":"\/images\/phones\/"},{"0":"102","member_id":"102","1":"mirchi.png","image_nm":"mirchi.png","2":"images\/phones\/","image_path":"images\/phones\/"},{"0":"103","member_id":"103","1":"masti.png","image_nm":"masti.png","2":"images\/phones\/","image_path":"images\/phones\/"}]';
-
-function objectParser(str){
-  return;
+function colonParser(data){
+  let reTest = /^:/.exec(data);
+  if(!reTest){
+    return null;
+  }
+  return [reTest[0],data.slice(1)];
 }
 
 function commaParser(data){
@@ -87,7 +144,7 @@ function numberParser(str){
 }
 
 function booleanParser(str){
-  let reTest = /(^true|false)/.exec(str);
+  let reTest = /(^true)|(^false)/.exec(str);
   if(!reTest){
     return null;
   }
