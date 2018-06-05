@@ -1,6 +1,6 @@
 "use strict";
 
-let whatToHighlight = 3;
+let whatToHighlight = 0;
 document.getElementById("btn2").addEventListener("click", function(){
   console.clear();
   document.getElementById('in1').value = "";
@@ -28,95 +28,98 @@ function jsonParser(str){
 
 function objectParser(str){
   let output = {};
-  let endOfObject = false;
-  str = removeWhiteSpaces(str);
+  let returnVal = function(exp){
+    whatToHighlight = 5;
+    switch(exp) {
+      case 0:
+        return null;
+      case 1:
+          str = str.slice(1);
+          return [output,str];
+      case 2:
+        console.error("Syntax error");
+        return;
+    }
+  }
 
+  str = removeWhiteSpaces(str);
   if(str.charAt(0) === '{'){
     str = str.slice(1);
+    str = removeWhiteSpaces(str);
+    if(str.charAt(0) === '}') return returnVal(1);
 
     while(str.charAt(0) !== '}'){
-      str = removeWhiteSpaces(str);
       let temp = stringParser(str);
 
-      if(!temp) return null;
+      if(!temp) return returnVal(0);
 
       let key = temp[0];
       str = removeWhiteSpaces(temp[1]);
       temp = colonParser(str);
 
-      if(!temp) return null;
+      if(!temp) return returnVal(0);
 
       str = removeWhiteSpaces(temp[1]);
       temp = jsonParser(str);
 
-      if(!temp) return null;
+      if(!temp) return returnVal(0);
 
       output[key] = temp[0];
       str = removeWhiteSpaces(temp[1]);
 
       if(str.charAt(0) === '}'){
-        str = str.slice(1);
-        endOfObject = true;
-        break;
+        return returnVal(1);
       } else if(str.charAt(0) === ','){
         temp = commaParser(str);
         str = removeWhiteSpaces(temp[1]);
         if(str.charAt(0) === '}'){
-          endOfObject = true;
-          break;
+          return returnVal(2);
         }
-      } else return null;
+      } else return returnVal(0);
     }
-  } else return null;
-
-  if(endOfObject){
-    whatToHighlight = 5;
-    return [output,str];
-  }
+  } else return returnVal(0);
 }
 
 function arrayParser(str){
   let output = [];
-  let endOfArray = false;
+  let returnVal = function(exp){
+    whatToHighlight = 4;
+    switch(exp) {
+      case 0:
+        return null;
+      case 1:
+          str = str.slice(1);
+          return [output,str];
+      case 2:
+        console.error("Syntax error");
+        return;
+    }
+  }
   str = removeWhiteSpaces(str);
+
   if(str.charAt(0) === '['){
     str = str.slice(1);
+    str = removeWhiteSpaces(str);
+
+    if(str.charAt(0) === ']') return returnVal(1);
 
     while(str.charAt(0) !== ']'){
-      str = removeWhiteSpaces(str);
       let temp = jsonParser(str);
 
-      if(!temp) return null;
-
+      if(!temp) return returnVal(0);
       output.push(temp[0]);
       str = removeWhiteSpaces(temp[1]);
 
-      if(str.charAt(0) === ']'){
-        //will return [1,2,3] for arrayParser('[1,2,3,]kdgdf');
-        str = str.slice(1);
-        endOfArray = true;
-        break;
-      }
+      if(str.charAt(0) === ']') return returnVal(1);
 
       else if(str.charAt(0) === ','){
         temp = commaParser(str);
         str = removeWhiteSpaces(temp[1]);
 
-        if(str.charAt(0) === ']'){
-          endOfArray = true;
-          break;
-        }
-      }
-
-      else return null;
-      //The above else will return null for case [1,2    "c"  "b",true]
+        if(str.charAt(0) === ']' || str.charAt(0) === ',')  return returnVal(2);
+      } else return returnVal(2);
     }
-  } else return null;
-
-  if(endOfArray){
-    whatToHighlight = 4;
-    return [output,str];
-  }
+  } else return returnVal(0);
 }
 
 function colonParser(data){
@@ -161,7 +164,7 @@ function whiteSpaceParser(str){
 }
 
 function numberParser(str){
-  let reTest = /^(-|\+)?\d+(\.\d+)?([eE][+-]?\d+)?/.exec(str);
+  let reTest = /^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/.exec(str);
   if(!reTest){
     return null;
   }
@@ -175,7 +178,7 @@ function booleanParser(str){
     return null;
   }
   whatToHighlight = 1;
-  return [(reTest[0]==="true")?(true):(false),str.slice(reTest[0].length)];
+  return [reTest[0] === "true" ? true : false, str.slice(reTest[0].length)];
 }
 
 function nullParser(str){
