@@ -164,12 +164,26 @@ function whiteSpaceParser(str){
 }
 
 function numberParser(str){
+  if (/^-?0+[1-9]+/.test(str)) {
+    console.error('Invalid input');
+    return;
+  }
   let reTest = /^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/.exec(str);
-  if(!reTest){
-    return null;
+  if (!reTest) {
+    console.error('Invalid input');
+    return;
   }
   whatToHighlight = 3;
-  return [Number(reTest[0]),str.slice(reTest[0].length)];
+  return [Number(reTest[0]), str.slice(reTest[0].length)];
+
+
+  // let reTest = /^-?(0|[1-9]\d*)(\.\d+)?([eE][+-]?\d+)?/.exec(str);
+  // //012 is invalid
+  // if(!reTest){
+  //   return null;
+  // }
+  // whatToHighlight = 3;
+  // return [Number(reTest[0]),str.slice(reTest[0].length)];
 }
 
 function booleanParser(str){
